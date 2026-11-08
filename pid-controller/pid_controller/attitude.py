@@ -5,7 +5,7 @@ Gyro axes are in deg/s; accel in g. Convention (aircraft, IMU flat on the HAT):
   pitch = rotation about +Y (right wing), positive nose-up
 
 Axis mapping (gyro_x/y/z, accel_x/y/z from firedrone.imu) assumes the chip X/Y/Z
-align with the airframe; remount offsets belong in config (see StabilizeConfig).
+align with the airframe; remount offsets belong in config (see pid_controller.config.StabilizeConfig).
 """
 from __future__ import annotations
 

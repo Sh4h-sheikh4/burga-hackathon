@@ -5,11 +5,13 @@ SAFETY (read before enabling motors):
   - Pass --arm only when ready; Ctrl-C / SIGTERM always disarms and stops pulses.
   - Throttle is clamped to [throttle_min, throttle_max]; tilt above max_tilt_deg forces disarm.
 
-    # Dry-run on a laptop (no pigpio, prints angles + mix):
-    python -m firedrone.stabilize --config config/example.json --seconds 2
+    # From repo root:
+    PYTHONPATH=pid-controller python -m pid_controller.stabilize \\
+      --config pid-controller/config/example.json --seconds 2
 
-    # On the Pi (props OFF), mock still recommended until wiring is verified:
-    python -m firedrone.stabilize --config config/pi.json --backend pigpio --throttle 0.15 --arm
+    # On the Pi (props OFF):
+    PYTHONPATH=pid-controller python -m pid_controller.stabilize \\
+      --config pid-controller/config/example.json --backend pigpio --throttle 0.15 --arm
 """
 from __future__ import annotations
 
@@ -21,12 +23,12 @@ import time
 from dataclasses import dataclass, field
 
 from .attitude import ComplementaryFilter
-from .config import StabilizeConfig, load_settings
+from .config import StabilizeConfig, load_config
 from .imu import ImuSample, open_imu
 from .motors import EscPwmConfig, MotorCommand, MotorDriver, command_to_pulses, mix_x_quad, open_motors
 from .pid import PID, PidGains
 
-log = logging.getLogger("firedrone.stabilize")
+log = logging.getLogger("pid_controller.stabilize")
 
 
 @dataclass
@@ -98,7 +100,6 @@ class AttitudeStabilizer:
             return self.state
 
         thr = max(self.cfg.throttle_min, min(self.cfg.throttle_max, throttle))
-        # Setpoint 0 = stay upright. Scale PID output (µs-ish units) into mix fraction.
         roll_out = self.roll_pid.step(0.0, roll, dt)
         pitch_out = self.pitch_pid.step(0.0, pitch, dt)
         scale = self.cfg.mix_scale
@@ -172,19 +173,18 @@ def run_loop(cfg: StabilizeConfig, seconds: float, throttle: float, arm: bool,
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--config", default=None, help="JSON settings (stabilize + imu fields)")
+    ap.add_argument("--config", default=None, help="JSON stabilize config (see pid-controller/config/example.json)")
     ap.add_argument("--seconds", type=float, default=5.0)
     ap.add_argument("--throttle", type=float, default=0.0, help="0..1 base throttle while armed")
     ap.add_argument("--arm", action="store_true", help="enable motor output (DANGEROUS with props)")
     ap.add_argument("--backend", choices=("mock", "pigpio"), default=None,
-                    help="default: stabilize.motor_backend from config (usually mock)")
+                    help="default: motor_backend from config (usually mock)")
     ap.add_argument("--rate", type=float, default=None, help="control loop Hz override")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    settings = load_settings(args.config)
-    cfg = settings.stabilize
+    cfg = load_config(args.config)
     backend = args.backend or cfg.motor_backend
     if args.arm and backend == "pigpio":
         log.warning("ARM + pigpio: remove props or tether the airframe before continuing")

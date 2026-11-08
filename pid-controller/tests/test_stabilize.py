@@ -3,12 +3,14 @@ from pathlib import Path
 
 import pytest
 
-from firedrone.attitude import ComplementaryFilter, accel_roll_pitch_deg
-from firedrone.config import StabilizeConfig, load_settings, validate_stabilize_config
-from firedrone.imu import ImuSample
-from firedrone.motors import MockMotors, EscPwmConfig, command_to_pulses, mix_x_quad, open_motors
-from firedrone.pid import PID, PidGains
-from firedrone.stabilize import AttitudeStabilizer
+from pid_controller.attitude import ComplementaryFilter, accel_roll_pitch_deg
+from pid_controller.config import StabilizeConfig, load_config, validate_stabilize_config
+from pid_controller.imu import ImuSample
+from pid_controller.motors import MockMotors, EscPwmConfig, command_to_pulses, mix_x_quad, open_motors
+from pid_controller.pid import PID, PidGains
+from pid_controller.stabilize import AttitudeStabilizer
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_accel_level_is_zero_tilt():
@@ -17,16 +19,14 @@ def test_accel_level_is_zero_tilt():
 
 
 def test_accel_roll_right_wing_down():
-    # +Y accel component with +Z => positive roll (right wing down)
     a = accel_roll_pitch_deg(ImuSample(0, 0, 0, 0, 1, 1))
     assert a.roll_deg == pytest.approx(45.0, abs=0.1)
 
 
 def test_complementary_seeds_from_accel_then_tracks_gyro():
-    f = ComplementaryFilter(alpha=1.0)  # pure gyro after seed
+    f = ComplementaryFilter(alpha=1.0)
     f.update(ImuSample(0, 0, 0, 0, 0, 1), 0.01)
     assert f.roll_deg == pytest.approx(0.0)
-    # 10 deg/s * 1 s = 10 deg
     for _ in range(100):
         f.update(ImuSample(10.0, 0, 0, 0, 0, 1), 0.01)
     assert f.roll_deg == pytest.approx(10.0, abs=0.05)
@@ -40,8 +40,8 @@ def test_pid_proportional_opposes_error():
 def test_pid_integral_clamped():
     pid = PID(PidGains(kp=0.0, ki=10.0, kd=0.0, i_limit=1.0, out_limit=100))
     for _ in range(50):
-        out = pid.step(0.0, -1.0, 0.1)  # positive error accumulates
-    assert out == pytest.approx(10.0)  # ki * i_limit
+        out = pid.step(0.0, -1.0, 0.1)
+    assert out == pytest.approx(10.0)
 
 
 def test_x_mixer_roll_right_boosts_left():
@@ -72,7 +72,7 @@ def test_open_motors_rejects_bad_backend():
 def test_disarmed_holds_idle_even_with_tilt():
     motors = MockMotors()
     stab = AttitudeStabilizer(StabilizeConfig(), motors)
-    sample = ImuSample(0, 0, 0, 0.2, 0, 1)  # slight pitch
+    sample = ImuSample(0, 0, 0, 0.2, 0, 1)
     st = stab.step(sample, 0.02, throttle=0.5)
     assert st.armed is False
     assert st.pulses_us == (1000, 1000, 1000, 1000)
@@ -92,7 +92,6 @@ def test_tilt_limit_kills():
     motors = MockMotors()
     stab = AttitudeStabilizer(StabilizeConfig(max_tilt_deg=30.0), motors)
     stab.arm()
-    # ~45 deg roll from accel
     st = stab.step(ImuSample(0, 0, 0, 0, 1, 1), 0.02, throttle=0.2)
     assert st.killed and not st.armed
     assert motors.last_pulses_us == (1000, 1000, 1000, 1000)
@@ -107,11 +106,11 @@ def test_cannot_rearm_after_kill():
         stab.arm()
 
 
-def test_stabilize_config_loads_from_example_json():
-    s = load_settings(Path(__file__).resolve().parents[1] / "config" / "example.json")
-    assert s.stabilize.motor_backend == "mock"
-    assert s.stabilize.motor_pins_bcm == [12, 13, 18, 19]
-    assert s.stabilize.imu_interface == "spi"
+def test_config_loads_from_example_json():
+    cfg = load_config(ROOT / "config" / "example.json")
+    assert cfg.motor_backend == "mock"
+    assert cfg.motor_pins_bcm == [12, 13, 18, 19]
+    assert cfg.imu_interface == "spi"
 
 
 def test_stabilize_config_validation():

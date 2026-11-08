@@ -4,6 +4,6 @@ numpy
 Pillow
 spidev            # IMU on SPI0 (Hackathon_Fall26 HAT); or apt install python3-spidev
 smbus2            # only for I2C-wired IMU boards
-# Attitude stabilize ESC PWM (optional): sudo apt install pigpio python3-pigpio && sudo systemctl enable --now pigpiod
+# pid-controller ESC PWM (optional): sudo apt install pigpio python3-pigpio && sudo systemctl enable --now pigpiod
 # pigpio
 # Only if you run inference ON the Pi (optional): tflite-runtime  (or onnxruntime)

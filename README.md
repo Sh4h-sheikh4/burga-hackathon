@@ -93,14 +93,11 @@ If the link drops, frames go to `spool_dir` (the SD card) and upload automatical
 `--flush-spool` uploads them by hand.
 
 ### Attitude stabilize (PID → ESC PWM)
-Upright hold for a quad: LSM6DS3TR-C gyro+accel → complementary filter → roll/pitch PID → X-mixer → four ESC pulses.
-The Hackathon_Fall26 HAT has **no motor drivers**; default BCM pins are `12,13,18,19` (FR, RL, FL, RR) and are overridable in the `stabilize` block of the JSON config. First tests: **props off or tethered**. Default backend is `mock` (no GPIO).
+Self-contained under **[`pid-controller/`](pid-controller/)** (motors/battery specs + run instructions in that folder’s README).
 ```bash
-python -m firedrone.stabilize --config config/example.json --seconds 2          # dry-run
-# On the Pi, after pigpiod is running and wiring is checked (props OFF):
-# python -m firedrone.stabilize --config config/pi.json --backend pigpio --throttle 0.15 --arm
+PYTHONPATH=pid-controller python -m pytest pid-controller/tests -q
+PYTHONPATH=pid-controller python -m pid_controller.stabilize --config pid-controller/config/example.json --seconds 2
 ```
-Ctrl-C / SIGTERM disarms. Tilt beyond `max_tilt_deg` kills output. See module docstring in `firedrone/stabilize.py`.
 
 ### 3. Worker (server)
 ```bash
@@ -155,9 +152,8 @@ JOIN frames f USING (frame_id, captured_at) WHERE a.status = 'ok' AND a.fire_pre
 export FIREDRONE_TEST_DSN=postgresql://user@host:port/db   # a disposable DB with TimescaleDB; tests DROP the tables
 python -m pytest -q
 ```
-65 tests (last run: 65 passed with DB, or 53 without): 53 run without a database. They cover decision logic (incl. the uniform-output guard),
-output mapping, preprocessing, the IMU over fake I2C and SPI buses, attitude PID / X-mixer / arming safety (`tests/test_stabilize.py`),
-the model-source inspector, the PCB reviewer (I2C/SPI
+50 tests in the fire pipeline (last run: 50 passed with DB, or 38 without), plus **15** attitude PID tests under `pid-controller/tests/`. Pipeline tests cover decision logic (incl. the uniform-output guard),
+output mapping, preprocessing, the IMU over fake I2C and SPI buses, the model-source inspector, the PCB reviewer (I2C/SPI
 fixtures), the revised trainer on synthetic images (training, ONNX-vs-PyTorch parity, refusing fire-only or too-small
 data, predict CLI), and the user's original script run unchanged. 12 more run against PostgreSQL 17 + TimescaleDB 2.23:
 schema, no-model path, ONNX end to end + continuous aggregate, 4 concurrent workers, dedupe, retry→error, offline
