@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Identify opaque attachments (.bin) by magic bytes / content and copy them to originals/ with real extensions.
-    python tools/triage_attachments.py <file-or-dir>... [--copy-to originals/]
+"""Identify opaque attachments (.bin) by magic bytes / content and copy them with real extensions.
+    python tools/triage_attachments.py <file-or-dir>... [--copy-to recovered/]
 Recognises: zip (incl. Keras .keras, KiCad project archives), HDF5 (.h5 Keras weights), PyTorch (.pt zip/pickle),
 ONNX, TFLite, KiCad .kicad_sch/.kicad_pcb/.kicad_pro, legacy EESchema, Gerber, Python source, images.
 """

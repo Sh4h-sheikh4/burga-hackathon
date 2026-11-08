@@ -12,9 +12,19 @@ venv/
 .ruff_cache/
 dist/
 build/
-# Local training outputs can be regenerated; keep smoke demo artifacts if added intentionally
+# Local training outputs (regenerable); committed demo weights live in demo_artifacts/
 artifacts/
+smoke_data/
 # Never commit live secrets or connection strings
 secrets/
 credentials*
 **/FIREDRONE_DB_URL*
+# SolidWorks junk
+~$*
+*.sldprt.lck
+*.sldasm.lck
+*.slddrw.lck
+*.SLDPRT.lck
+*.SLDASM.lck
+Thumbs.db
+.DS_Store

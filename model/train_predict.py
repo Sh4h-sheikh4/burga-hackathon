@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fire presence + severity CNN: train, evaluate, export (ONNX), predict.
 
-Revised replacement for the user's original `train_predict.py` (kept unmodified in originals/user_upload/).
+CNN trainer / predict CLI for fire presence + severity (exports into the firedrone worker).
 The original was a LinearSVC on raw grayscale pixels with labels fire/no_fire only: it could not output severity,
 had no confidence scores, and cannot train on a fire-only dataset. This version:
 

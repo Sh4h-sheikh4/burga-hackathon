@@ -2,7 +2,7 @@
 """Write a tiny SYNTHETIC dataset (grey blobs, NOT fire photos) to check that training, upload, the worker and the
 database are wired correctly before real images are ready. A model trained on it means nothing about real fires.
 
-    python tools/make_smoke_dataset.py            # -> smoke_data/{train,val,test}/<class>/  and  smoke_demo_images/
+    python tools/make_smoke_dataset.py            # -> smoke_data/{train,val,test}/<class>/  and  demo_images/
 """
 import argparse
 import sys
@@ -17,7 +17,7 @@ RADII = {"no_fire": 0, "low": 8, "moderate": 20, "high": 40}
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="smoke_data")
-    ap.add_argument("--demo", default="smoke_demo_images")
+    ap.add_argument("--demo", default="demo_images")
     ap.add_argument("--per-class", type=int, default=30)
     ap.add_argument("--binary", action="store_true", help="only no_fire/fire folders (presence-only model)")
     a = ap.parse_args()

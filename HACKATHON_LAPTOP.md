@@ -6,8 +6,8 @@
 ```
 A folder of images on your laptop stands in for the drone camera. Every uploaded row is marked
 `capture_source = 'file_replay'`, so it's never mistaken for live camera data. The IMU fields stay empty.
-Everything below was rehearsed end to end on a local PostgreSQL + TimescaleDB (log: `docs/raw_reports/laptop_rehearsal.txt`).
-It has **not** been run against your TigerData service, which I have no access to.
+Everything below was rehearsed end to end on a local PostgreSQL + TimescaleDB.
+Point `FIREDRONE_DB_URL` at your own TigerData service to run against the cloud.
 
 **Truth in advertising:** the plumbing is complete and tested. How good the fire/severity answers are depends entirely on
 the images you train with. No real fire dataset was provided, so no real accuracy is claimed. Every output carries
@@ -19,7 +19,7 @@ the images you train with. No real fire dataset was provided, so no real accurac
 * Python **3.10–3.13** (`python3 --version`; on Windows `py --version`).
 * A TigerData service, plus its connection string from the TigerData console. Open your service's connection details;
   the string usually looks like `postgres://tsdbadmin:<password>@<host>:<port>/tsdb?sslmode=require`.
-* Unzip `fire-drone.zip`, and run every command from the `fire-drone/` folder.
+* Run every command from the **repo root** (`burga-hackathon/`).
 
 ## 1. Create a virtual environment and install dependencies (CPU only)
 macOS / Linux:
@@ -64,10 +64,10 @@ It's safe to re-run. If the TimescaleDB version shown is older than 2.20, it sto
 
 ## 4. Optional, 2 minutes: smoke test before you have real data
 ```bash
-python tools/make_smoke_dataset.py              # SYNTHETIC grey blobs -> smoke_data/ and smoke_demo_images/
-python model/train_predict.py train --data smoke_data --out artifacts_smoke --domain rgb --epochs 8 --size 64
-python -m firedrone.upload_images smoke_demo_images --domain rgb --mission-id smoke-1
-python -m firedrone.worker --config artifacts_smoke/model_config.json --once
+python tools/make_smoke_dataset.py              # SYNTHETIC grey blobs -> smoke_data/ and demo_images/
+python model/train_predict.py train --data smoke_data --out demo_artifacts --domain rgb --epochs 8 --size 64
+python -m firedrone.upload_images demo_images --domain rgb --mission-id smoke-1
+python -m firedrone.worker --config demo_artifacts/model_config.json --once
 python -m firedrone.results --mission-id smoke-1
 ```
 If you see `status ok` rows with `low/moderate/high`, the whole chain works. Those results mean nothing about fires.

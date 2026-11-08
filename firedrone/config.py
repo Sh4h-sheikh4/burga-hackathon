@@ -79,7 +79,7 @@ class Settings:
     sensor_domain: str = "ir"            # user said "USB IR camera"; exact type (near-IR vs thermal) unknown
     spool_dir: str = "./spool"
     imu_enabled: bool = True
-    imu_interface: str = "spi"         # Hackathon_Fall26 HAT wires the IMU to SPI0/CE0 (see docs/INSPECTION_NOTES.md)
+    imu_interface: str = "spi"         # Hackathon_Fall26 HAT wires the IMU to SPI0/CE0 (see pcb/ and docs/INSPECTION_NOTES.md)
     imu_spi_bus: int = 0
     imu_spi_device: int = 0            # CE0 = GPIO8 = header pin 24
     imu_i2c_bus: int = 1
