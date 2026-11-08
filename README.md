@@ -1,3 +1,13 @@
+# burga-hackathon
+
+Wildfire monitoring hackathon prototype: laptop image upload → TigerData → model → assessments.
+
+Also includes earlier upload folders: PCB-files/, compilation of the drone files/, root 	rain_predict.py, and hackathon_f26.py.
+
+For the laptop TigerData workflow, start with [HACKATHON_LAPTOP.md](HACKATHON_LAPTOP.md). Set FIREDRONE_DB_URL locally from Tiger Cloud (never commit the real connection string; see .env.example).
+
+---
+
 # Fire-drone: IR camera → TigerData → fire assessment → TigerData
 
 > **What's in here.** Your zip (`Hackathon_Fall26` KiCad 10 project + `train_predict.py`) was reviewed. Findings are in
