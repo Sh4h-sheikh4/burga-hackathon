@@ -67,6 +67,40 @@ class ModelConfig:
 
 
 @dataclass
+class StabilizeConfig:
+    """Upright attitude hold (see firedrone.stabilize). Pin map is for off-HAT ESC wiring."""
+    enabled: bool = False
+    motor_backend: str = "mock"          # "mock" (safe default) or "pigpio"
+    motor_pins_bcm: list[int] = field(default_factory=lambda: [12, 13, 18, 19])  # FR, RL, FL, RR
+    pwm_frequency_hz: int = 50
+    pulse_min_us: int = 1000
+    pulse_max_us: int = 2000
+    pulse_idle_us: int = 1000
+    loop_hz: float = 50.0
+    complementary_alpha: float = 0.98
+    roll_kp: float = 1.5
+    roll_ki: float = 0.0
+    roll_kd: float = 0.05
+    pitch_kp: float = 1.5
+    pitch_ki: float = 0.0
+    pitch_kd: float = 0.05
+    i_limit: float = 30.0
+    pid_out_limit: float = 200.0
+    mix_scale: float = 0.002             # maps PID output -> mixer units
+    throttle_min: float = 0.0
+    throttle_max: float = 0.70           # hard ceiling; raise only after tethered tests
+    max_tilt_deg: float = 45.0           # auto-kill if exceeded
+    roll_offset_deg: float = 0.0
+    pitch_offset_deg: float = 0.0
+    # IMU path for the stabilize process (mirrors Settings IMU defaults / SPI HAT wiring)
+    imu_interface: str = "spi"
+    imu_spi_bus: int = 0
+    imu_spi_device: int = 0
+    imu_i2c_bus: int = 1
+    imu_address: int = 0x6A
+
+
+@dataclass
 class Settings:
     db_url: str | None
     device_id: str = "drone-01"
@@ -89,6 +123,7 @@ class Settings:
     worker_max_attempts: int = 3
     worker_stale_claim_s: int = 300
     model: ModelConfig = field(default_factory=ModelConfig)
+    stabilize: StabilizeConfig = field(default_factory=StabilizeConfig)
 
 
 def _merge(dc_cls, data: dict[str, Any]):
@@ -97,7 +132,13 @@ def _merge(dc_cls, data: dict[str, Any]):
         f = dc_cls.__dataclass_fields__.get(k)
         if f is None:
             raise ValueError(f"Unknown config key '{k}' for {dc_cls.__name__}")
-        sub = {"input": InputSpec, "output": OutputSpec, "thresholds": Thresholds, "model": ModelConfig}.get(k)
+        sub = {
+            "input": InputSpec,
+            "output": OutputSpec,
+            "thresholds": Thresholds,
+            "model": ModelConfig,
+            "stabilize": StabilizeConfig,
+        }.get(k)
         kwargs[k] = _merge(sub, v) if sub and isinstance(v, dict) else v
     return dc_cls(**kwargs)
 
@@ -116,8 +157,33 @@ def load_settings(path: str | os.PathLike | None = None) -> Settings:
         s.mission_id = os.environ["FIREDRONE_MISSION_ID"]
     if path and s.model.path and not Path(s.model.path).is_absolute():
         s.model.path = str((Path(path).resolve().parent / s.model.path).resolve())  # relative to the config file
+    # Stabilize reuses top-level IMU wiring unless the stabilize block overrides it.
+    if "stabilize" not in data or "imu_interface" not in (data.get("stabilize") or {}):
+        s.stabilize.imu_interface = s.imu_interface
+        s.stabilize.imu_spi_bus = s.imu_spi_bus
+        s.stabilize.imu_spi_device = s.imu_spi_device
+        s.stabilize.imu_i2c_bus = s.imu_i2c_bus
+        s.stabilize.imu_address = s.imu_address
     validate_model_config(s.model)
+    validate_stabilize_config(s.stabilize)
     return s
+
+
+def validate_stabilize_config(c: StabilizeConfig) -> None:
+    if c.motor_backend not in ("mock", "pigpio"):
+        raise ValueError("stabilize.motor_backend must be 'mock' or 'pigpio'")
+    if len(c.motor_pins_bcm) != 4:
+        raise ValueError("stabilize.motor_pins_bcm must list exactly 4 BCM GPIO pins (FR, RL, FL, RR)")
+    if not (0.0 <= c.throttle_min <= c.throttle_max <= 1.0):
+        raise ValueError("need 0 <= throttle_min <= throttle_max <= 1")
+    if not (0.0 <= c.complementary_alpha <= 1.0):
+        raise ValueError("complementary_alpha must be in [0, 1]")
+    if c.pulse_min_us >= c.pulse_max_us:
+        raise ValueError("pulse_min_us must be < pulse_max_us")
+    if c.loop_hz <= 0:
+        raise ValueError("loop_hz must be > 0")
+    if c.max_tilt_deg <= 0:
+        raise ValueError("max_tilt_deg must be > 0")
 
 
 def validate_model_config(m: ModelConfig) -> None:
