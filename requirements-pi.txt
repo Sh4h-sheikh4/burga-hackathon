@@ -1,0 +1,7 @@
+# Raspberry Pi 3 (Raspberry Pi OS Bookworm, 64-bit recommended). Install OpenCV via apt: sudo apt install python3-opencv
+psycopg[binary]>=3.2   # if no wheel for your Pi OS: sudo apt install python3-psycopg
+numpy
+Pillow
+spidev            # IMU on SPI0 (Hackathon_Fall26 HAT); or apt install python3-spidev
+smbus2            # only for I2C-wired IMU boards
+# Only if you run inference ON the Pi (optional): tflite-runtime  (or onnxruntime)

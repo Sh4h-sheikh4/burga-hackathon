@@ -1,0 +1,20 @@
+# 2026-11-08 03:56 UTC local PostgreSQL 17.11 + TimescaleDB 2.23.0 (NOT TigerData cloud)
+# Model = model/train_predict.py small_cnn trained on SYNTHETIC blobs (/tmp/sevtest, 12 img/class, 32 px). Plumbing demo only - not a fire model.
+12 SYNTHETIC frames inserted
+INFO processed 12 frames
+  t_utc   | status | fire_present | p_fire | severity_class | sev_conf | validated | is_synthetic 
+----------+--------+--------------+--------+----------------+----------+-----------+--------------
+ 03:56:20 | ok     | f            |  0.000 |                |          | f         | t
+ 03:56:21 | ok     | f            |  0.000 |                |          | f         | t
+ 03:56:22 | ok     | f            |  0.000 |                |          | f         | t
+ 03:56:23 | ok     | f            |  0.000 |                |          | f         | t
+ 03:56:24 | ok     | t            |  1.000 | moderate       |    1.000 | f         | t
+ 03:56:25 | ok     | t            |  1.000 | moderate       |    1.000 | f         | t
+ 03:56:26 | ok     | t            |  1.000 | moderate       |    1.000 | f         | t
+ 03:56:27 | ok     | t            |  1.000 | moderate       |    1.000 | f         | t
+ 03:56:28 | ok     | t            |  1.000 | moderate       |    1.000 | f         | t
+ 03:56:29 | ok     | t            |  1.000 | high           |    0.997 | f         | t
+ 03:56:30 | ok     | t            |  1.000 | high           |    1.000 | f         | t
+ 03:56:31 | ok     | t            |  1.000 | high           |    1.000 | f         | t
+(12 rows)
+

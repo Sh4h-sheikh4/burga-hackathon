@@ -1,0 +1,139 @@
+"""Configuration loading. Everything is driven by a JSON file plus environment variables.
+
+Secrets (the database URL) come ONLY from the environment (FIREDRONE_DB_URL), never from the JSON file.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from typing import Any
+
+
+@dataclass
+class InputSpec:
+    width: int = 224
+    height: int = 224
+    channels: int = 3            # 1 = grayscale, 3 = RGB (grayscale IR is replicated to 3 channels)
+    layout: str = "NHWC"         # "NHWC" (Keras/TFLite) or "NCHW" (PyTorch/ONNX-from-torch)
+    scale: str = "0_1"           # "0_1", "minus1_1", "imagenet", "raw_0_255"
+    dtype: str = "float32"
+
+
+@dataclass
+class OutputSpec:
+    # "binary_sigmoid": one value = P(fire). Model provides NO severity.
+    # "softmax_classes": one vector over `labels`; `no_fire_label` marks the negative class.
+    # "two_head": outputs[fire_head] = P(fire) (1 value or 2-way softmax), outputs[severity_head] = softmax over severity_labels.
+    type: str = "softmax_classes"
+    labels: list[str] = field(default_factory=lambda: ["no_fire", "low", "moderate", "high"])
+    no_fire_label: str = "no_fire"
+    severity_labels: list[str] = field(default_factory=lambda: ["low", "moderate", "high"])
+    fire_head: int = 0
+    severity_head: int = 1
+    apply_softmax: bool = False  # set True if the model outputs logits
+    apply_sigmoid: bool = False
+
+
+@dataclass
+class Thresholds:
+    fire_present_at_or_above: float = 0.70   # P(fire) >= this -> fire_present TRUE
+    no_fire_at_or_below: float = 0.30        # P(fire) <= this -> fire_present FALSE; in between -> uncertain/NULL
+    min_severity_confidence: float = 0.50    # below this the severity class is withheld (NULL)
+    max_normalized_entropy: float = 0.90     # class distribution flatter than this = uninformative -> uncertain
+    min_mean_intensity: float = 5.0          # frame almost black -> quality flag
+    max_saturated_fraction: float = 0.60     # most pixels clipped -> quality flag
+    min_sharpness: float = 2.0               # very blurry (motion) -> quality flag
+    max_gyro_dps: float = 120.0              # IMU says the drone was rotating fast -> motion-blur flag
+    proxy_hot_level: int = 240               # 8-bit level counted as "very bright" (not a temperature) for the proxy
+
+
+@dataclass
+class ModelConfig:
+    name: str = "unconfigured"
+    version: str = "0"
+    backend: str = "none"        # "onnx", "tflite", "keras", "torchscript", "none"
+    path: str | None = None
+    training_domain: str = "unknown"  # "rgb", "ir", "unknown" - what the training images were. NOTE: "ir" does not
+                                      # distinguish near-IR from thermal; validate on frames from the same camera type.
+    validated: bool = False           # set TRUE only after tools/evaluate.py on a labeled held-out set
+    treat_domain_mismatch_as_uncertain: bool = True
+    treat_low_quality_as_uncertain: bool = True
+    input: InputSpec = field(default_factory=InputSpec)
+    output: OutputSpec = field(default_factory=OutputSpec)
+    thresholds: Thresholds = field(default_factory=Thresholds)
+
+
+@dataclass
+class Settings:
+    db_url: str | None
+    device_id: str = "drone-01"
+    mission_id: str | None = None
+    camera_index: int = 0
+    camera_width: int = 640
+    camera_height: int = 480
+    capture_interval_s: float = 1.0
+    jpeg_quality: int = 85
+    sensor_domain: str = "ir"            # user said "USB IR camera"; exact type (near-IR vs thermal) unknown
+    spool_dir: str = "./spool"
+    imu_enabled: bool = True
+    imu_interface: str = "spi"         # Hackathon_Fall26 HAT wires the IMU to SPI0/CE0 (see docs/INSPECTION_NOTES.md)
+    imu_spi_bus: int = 0
+    imu_spi_device: int = 0            # CE0 = GPIO8 = header pin 24
+    imu_i2c_bus: int = 1
+    imu_address: int = 0x6A           # 0x6A if SDO/SA0 tied to GND, 0x6B if tied to VDDIO
+    worker_batch_size: int = 8
+    worker_poll_s: float = 1.0
+    worker_max_attempts: int = 3
+    worker_stale_claim_s: int = 300
+    model: ModelConfig = field(default_factory=ModelConfig)
+
+
+def _merge(dc_cls, data: dict[str, Any]):
+    kwargs = {}
+    for k, v in (data or {}).items():
+        f = dc_cls.__dataclass_fields__.get(k)
+        if f is None:
+            raise ValueError(f"Unknown config key '{k}' for {dc_cls.__name__}")
+        sub = {"input": InputSpec, "output": OutputSpec, "thresholds": Thresholds, "model": ModelConfig}.get(k)
+        kwargs[k] = _merge(sub, v) if sub and isinstance(v, dict) else v
+    return dc_cls(**kwargs)
+
+
+def load_settings(path: str | os.PathLike | None = None) -> Settings:
+    path = path or os.environ.get("FIREDRONE_CONFIG")
+    data: dict[str, Any] = {}
+    if path:
+        data = json.loads(Path(path).read_text())
+    data.pop("db_url", None)  # never read secrets from the file
+    s = _merge(Settings, {"db_url": None, **data})
+    s.db_url = os.environ.get("FIREDRONE_DB_URL")
+    if os.environ.get("FIREDRONE_DEVICE_ID"):
+        s.device_id = os.environ["FIREDRONE_DEVICE_ID"]
+    if os.environ.get("FIREDRONE_MISSION_ID"):
+        s.mission_id = os.environ["FIREDRONE_MISSION_ID"]
+    if path and s.model.path and not Path(s.model.path).is_absolute():
+        s.model.path = str((Path(path).resolve().parent / s.model.path).resolve())  # relative to the config file
+    validate_model_config(s.model)
+    return s
+
+
+def validate_model_config(m: ModelConfig) -> None:
+    t = m.thresholds
+    if not (0.0 <= t.no_fire_at_or_below <= t.fire_present_at_or_above <= 1.0):
+        raise ValueError("Need 0 <= no_fire_at_or_below <= fire_present_at_or_above <= 1")
+    o = m.output
+    if o.type not in ("binary_sigmoid", "softmax_classes", "two_head"):
+        raise ValueError(f"Unsupported output.type {o.type}")
+    if o.type == "softmax_classes" and o.no_fire_label not in o.labels:
+        raise ValueError("softmax_classes needs no_fire_label inside labels")
+    if m.input.layout not in ("NHWC", "NCHW"):
+        raise ValueError("input.layout must be NHWC or NCHW")
+    if m.input.scale not in ("0_1", "minus1_1", "imagenet", "raw_0_255"):
+        raise ValueError("bad input.scale")
+
+
+def config_sha256(m: ModelConfig) -> str:
+    return hashlib.sha256(json.dumps(asdict(m), sort_keys=True).encode()).hexdigest()

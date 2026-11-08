@@ -1,0 +1,16 @@
+# Raspberry Pi: sudo cp deploy/firedrone-ingest.service /etc/systemd/system/ && sudo systemctl enable --now firedrone-ingest
+[Unit]
+Description=Fire drone camera + IMU ingest to TigerData
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/fire-drone
+EnvironmentFile=/home/pi/fire-drone/.env
+ExecStart=/usr/bin/python3 -m firedrone.ingest --config config/pi.json
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

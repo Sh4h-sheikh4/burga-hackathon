@@ -1,0 +1,14 @@
+# Server/laptop (recommended) or Pi with a TFLite/ONNX model.
+[Unit]
+Description=Fire assessment inference worker
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/fire-drone
+EnvironmentFile=/opt/fire-drone/.env
+ExecStart=/usr/bin/python3 -m firedrone.worker --config config/server.json
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

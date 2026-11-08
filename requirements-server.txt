@@ -1,0 +1,8 @@
+psycopg[binary]>=3.2
+numpy>=1.24
+Pillow>=10
+onnxruntime>=1.17      # worker backend for the exported fire_model.onnx
+torch                  # training only: pip install torch --index-url https://download.pytorch.org/whl/cpu
+scikit-learn
+opencv-python-headless  # only to run the original train_predict.py
+pytest>=8

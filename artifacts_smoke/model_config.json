@@ -1,0 +1,50 @@
+{
+  "model": {
+    "name": "fire_cnn_small_cnn",
+    "version": "0.1.0",
+    "backend": "onnx",
+    "path": "fire_model.onnx",
+    "training_domain": "rgb",
+    "validated": false,
+    "treat_domain_mismatch_as_uncertain": true,
+    "treat_low_quality_as_uncertain": true,
+    "input": {
+      "width": 64,
+      "height": 64,
+      "channels": 3,
+      "layout": "NCHW",
+      "scale": "0_1",
+      "dtype": "float32"
+    },
+    "output": {
+      "type": "softmax_classes",
+      "labels": [
+        "no_fire",
+        "low",
+        "moderate",
+        "high"
+      ],
+      "no_fire_label": "no_fire",
+      "severity_labels": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "fire_head": 0,
+      "severity_head": 1,
+      "apply_softmax": false,
+      "apply_sigmoid": false
+    },
+    "thresholds": {
+      "fire_present_at_or_above": 0.7,
+      "no_fire_at_or_below": 0.3,
+      "min_severity_confidence": 0.5,
+      "max_normalized_entropy": 0.9,
+      "min_mean_intensity": 5.0,
+      "max_saturated_fraction": 0.6,
+      "min_sharpness": 2.0,
+      "max_gyro_dps": 120.0,
+      "proxy_hot_level": 240
+    }
+  }
+}

@@ -1,0 +1,38 @@
+# pcb_review.py on SYNTHETIC fixture boards (not the user's board; see user_board/pcb_review.txt for that)
+### SYNTHETIC_good_board
+== ERRORS (0)
+== WARNINGS (0)
+== INFO (11)
+  - KiCad file version 20240108 generator pcbnew; copper layers: ['F.Cu', 'B.Cu']
+  - Pi header: J1 (Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical)
+  - Parts on Pi 5V net '+5V': none
+  - Nothing on the board connects to the Pi 5V net: Pi must be powered through its own micro-USB.
+  - IMU U1: 1:SDO/SA0=GND, 2:SDx=+3V3, 3:SCx=+3V3, 4:INT1=None, 5:VDDIO=+3V3, 6:GND=GND, 7:GND=GND, 8:VDD=+3V3, 9:INT2=None, 10:NC=None, 11:NC=None, 12:CS=+3V3, 13:SCL=/SCL, 14:SDA=/SDA
+  - U1: SA0=GND -> I2C address 0x6A
+  - Pi 3 already has 1.8 kOhm pull-ups to 3V3 on GPIO2/3; extra board pull-ups are optional.
+  - U1: VDD decoupled by C1=100nF at 0.0 mm, C2=100nF at 0.0 mm
+  - U1: VDDIO decoupled by C1=100nF at 0.0 mm, C2=100nF at 0.0 mm
+  - No USB footprint on the PCB: the USB IR camera plugs straight into a Pi 3 USB-A port (fine). Pi 3 USB ports share ~1.2 A total; check the camera's current draw.
+  - 26 pads have no net or an unconnected-(...) net (unused header pins are expected); first 20: [('J1', '7'), ('J1', '8'), ('J1', '10'), ('J1', '11'), ('J1', '12'), ('J1', '13'), ('J1', '15'), ('J1', '16'), ('J1', '18'), ('J1', '19'), ('J1', '21'), ('J1', '22'), ('J1', '23'), ('J1', '24'), ('J1', '26'), ('J1', '27'), ('J1', '28'), ('J1', '29'), ('J1', '31'), ('J1', '32')]
+exit=0
+### SYNTHETIC_bad_board
+== ERRORS (9)
+  - U1: VDD on net '+5V' - LSM6DS3TR-C max supply is 3.6 V (abs max 4.8 V). Use 3V3.
+  - U1: VDD tied to Pi 5V - will damage the IMU.
+  - U1: CS tied to GND -> SPI mode, I2C disabled, and no Pi SPI0 chip-select wired: interface is dead.
+  - U1: SDO/SA0 (pin 1) floating - in I2C mode it is an input without pull-up; address undefined.
+  - U1: SCL (pin 13) net '/SDA' != Pi GPIO3/SCL1 (header pin 5) net '/SCL'.
+  - U1: SDA (pin 14) net '/SCL' != Pi GPIO2/SDA1 (header pin 3) net '/SDA'.
+  - U1: SDx (pin 2) is floating (net 'None'). ST DS Table 2 / AN5130 sec 3.6: in Mode 1 SDx/SCx must be connected to VDDIO or GND and cannot be left floating (recommended: VDDIO). A schematic no-connect flag hides this from ERC.
+  - U1: no decoupling capacitor between VDD net '+5V' and GND (datasheet: 100 nF).
+  - U1: no decoupling capacitor between VDDIO net '+3V3' and GND (datasheet: 100 nF).
+== WARNINGS (0)
+== INFO (7)
+  - KiCad file version 20240108 generator pcbnew; copper layers: ['F.Cu', 'B.Cu']
+  - Pi header: J1 (Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical)
+  - Parts on Pi 5V net '+5V': ['U1(LSM6DS3TR-C)']
+  - If the board feeds the Pi through header 5V, that bypasses the Pi 3 input polyfuse/TVS: the regulator must deliver >= 2.5 A clean 5.0-5.25 V; add reverse-polarity protection.
+  - IMU U1: 1:SDO/SA0=None, 2:SDx=None, 3:SCx=+3V3, 4:INT1=None, 5:VDDIO=+3V3, 6:GND=GND, 7:GND=GND, 8:VDD=+5V, 9:INT2=None, 10:NC=None, 11:NC=None, 12:CS=GND, 13:SCL=/SDA, 14:SDA=/SCL
+  - No USB footprint on the PCB: the USB IR camera plugs straight into a Pi 3 USB-A port (fine). Pi 3 USB ports share ~1.2 A total; check the camera's current draw.
+  - 28 pads have no net or an unconnected-(...) net (unused header pins are expected); first 20: [('J1', '7'), ('J1', '8'), ('J1', '10'), ('J1', '11'), ('J1', '12'), ('J1', '13'), ('J1', '15'), ('J1', '16'), ('J1', '18'), ('J1', '19'), ('J1', '21'), ('J1', '22'), ('J1', '23'), ('J1', '24'), ('J1', '26'), ('J1', '27'), ('J1', '28'), ('J1', '29'), ('J1', '31'), ('J1', '32')]
+exit=1

@@ -1,0 +1,282 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-08T03:46:49",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "PTH inside courtyard",
+            "key": "pth_inside_courtyard"
+        },
+        {
+            "description": "NPTH inside courtyard",
+            "key": "npth_inside_courtyard"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.8",
+    "schematic_parity": [],
+    "source": "Hackathon_Fall26.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Track has unconnected end",
+            "items": [
+                {
+                    "description": "Track [/ID_SDA] on F.Cu, length 4.0000 mm",
+                    "pos": {
+                        "x": 138.5,
+                        "y": 95.5
+                    },
+                    "uuid": "d3946d03-7d13-41ae-b3a3-d35b453d25a9"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_dangling"
+        },
+        {
+            "description": "Track has unconnected end",
+            "items": [
+                {
+                    "description": "Track [/ID_SCL] on F.Cu, length 0.1909 mm",
+                    "pos": {
+                        "x": 143.0,
+                        "y": 94.0
+                    },
+                    "uuid": "cf71d207-737d-48cc-8e4b-213e3c50c675"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_dangling"
+        },
+        {
+            "description": "Track has unconnected end",
+            "items": [
+                {
+                    "description": "Track [+3V3] on F.Cu, length 1.0500 mm",
+                    "pos": {
+                        "x": 108.37,
+                        "y": 48.77
+                    },
+                    "uuid": "6d92cf89-e5f3-4896-9ed5-07be37f42c57"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_dangling"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint MH2",
+                    "pos": {
+                        "x": 161.5,
+                        "y": 47.5
+                    },
+                    "uuid": "0beff73c-ea66-46e4-96f9-c0c7195d2160"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Capacitor_SMD'",
+            "items": [
+                {
+                    "description": "Footprint C1",
+                    "pos": {
+                        "x": 119.5,
+                        "y": 71.5
+                    },
+                    "uuid": "510b59ca-1786-4df6-bd92-f793b57aa245"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Resistor_THT'",
+            "items": [
+                {
+                    "description": "Footprint R1",
+                    "pos": {
+                        "x": 132.42,
+                        "y": 79.0
+                    },
+                    "uuid": "6cb0d0e1-cda4-42d6-9cc6-15a32ff66083"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Resistor_THT'",
+            "items": [
+                {
+                    "description": "Footprint R2",
+                    "pos": {
+                        "x": 131.92,
+                        "y": 85.0
+                    },
+                    "uuid": "789a751b-1a83-4036-b73e-0916f8158a7a"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint MH3",
+                    "pos": {
+                        "x": 103.5,
+                        "y": 96.5
+                    },
+                    "uuid": "7e8d827e-a7ed-44d4-95fc-a91af7cef820"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint MH1",
+                    "pos": {
+                        "x": 103.5,
+                        "y": 47.5
+                    },
+                    "uuid": "89efe179-e83b-40db-abd4-3fc7739e57ac"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Package_SO'",
+            "items": [
+                {
+                    "description": "Footprint U1",
+                    "pos": {
+                        "x": 130.5,
+                        "y": 93.5
+                    },
+                    "uuid": "9e32a42c-6ea1-43e8-ae1e-84cc1efea85c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Capacitor_SMD'",
+            "items": [
+                {
+                    "description": "Footprint C6",
+                    "pos": {
+                        "x": 119.5,
+                        "y": 60.0
+                    },
+                    "uuid": "a783863b-99aa-4d2e-8e05-83d87c166acb"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Capacitor_SMD'",
+            "items": [
+                {
+                    "description": "Footprint C5",
+                    "pos": {
+                        "x": 114.5,
+                        "y": 91.5
+                    },
+                    "uuid": "b73f9a9f-32f3-48f6-8438-59ec1e2819df"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint MH4",
+                    "pos": {
+                        "x": 161.5,
+                        "y": 96.5
+                    },
+                    "uuid": "c5d6c104-5680-4140-a821-8340078f5018"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Connector_PinHeader_2.54mm'",
+            "items": [
+                {
+                    "description": "Footprint JP1",
+                    "pos": {
+                        "x": 125.5,
+                        "y": 80.225
+                    },
+                    "uuid": "c8d47574-16ca-46f8-ab7d-d7bed30a104b"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Package_LGA'",
+            "items": [
+                {
+                    "description": "Footprint U2",
+                    "pos": {
+                        "x": 134.5,
+                        "y": 71.0875
+                    },
+                    "uuid": "ce785423-ef83-4f07-9641-703af2f0e4c1"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'Connector_PinSocket_2.54mm'",
+            "items": [
+                {
+                    "description": "Footprint J1",
+                    "pos": {
+                        "x": 108.37,
+                        "y": 48.77
+                    },
+                    "uuid": "00000000-0000-0000-0000-00005a793e9f"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        }
+    ]
+}

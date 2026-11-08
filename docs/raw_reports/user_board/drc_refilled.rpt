@@ -1,0 +1,67 @@
+** Drc report for Hackathon_Fall26.kicad_pcb **
+** Created on 2026-11-08T03:46:49 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 16 DRC violations **
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(138.5000 mm, 95.5000 mm): Track [/ID_SDA] on F.Cu, length 4.0000 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(143.0000 mm, 94.0000 mm): Track [/ID_SCL] on F.Cu, length 0.1909 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(108.3700 mm, 48.7700 mm): Track [+3V3] on F.Cu, length 1.0500 mm
+[lib_footprint_issues]: The current configuration does not include the footprint library 'MountingHole'
+    Local override; warning
+    @(161.5000 mm, 47.5000 mm): Footprint MH2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Capacitor_SMD'
+    Local override; warning
+    @(119.5000 mm, 71.5000 mm): Footprint C1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Resistor_THT'
+    Local override; warning
+    @(132.4200 mm, 79.0000 mm): Footprint R1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Resistor_THT'
+    Local override; warning
+    @(131.9200 mm, 85.0000 mm): Footprint R2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'MountingHole'
+    Local override; warning
+    @(103.5000 mm, 96.5000 mm): Footprint MH3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'MountingHole'
+    Local override; warning
+    @(103.5000 mm, 47.5000 mm): Footprint MH1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Package_SO'
+    Local override; warning
+    @(130.5000 mm, 93.5000 mm): Footprint U1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Capacitor_SMD'
+    Local override; warning
+    @(119.5000 mm, 60.0000 mm): Footprint C6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Capacitor_SMD'
+    Local override; warning
+    @(114.5000 mm, 91.5000 mm): Footprint C5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'MountingHole'
+    Local override; warning
+    @(161.5000 mm, 96.5000 mm): Footprint MH4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Connector_PinHeader_2.54mm'
+    Local override; warning
+    @(125.5000 mm, 80.2250 mm): Footprint JP1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Package_LGA'
+    Local override; warning
+    @(134.5000 mm, 71.0875 mm): Footprint U2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'Connector_PinSocket_2.54mm'
+    Local override; warning
+    @(108.3700 mm, 48.7700 mm): Footprint J1
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - PTH inside courtyard
+    - NPTH inside courtyard
+
+** End of Report **

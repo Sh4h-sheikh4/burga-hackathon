@@ -1,0 +1,11 @@
+# ORIGINAL train_predict.py executed unchanged on SYNTHETIC blob images (code-execution check only; accuracy below is meaningless for real fires)
+## train (synthetic fire/no_fire)
+Saved model to m.joblib
+Validation accuracy: 100.0%
+## predict
+Prediction: fire
+## fire-only dataset (like '600 images of fires' with no negatives)
+No images found in fireonly/train/no_fire
+exit=1
+## probability API?
+has predict_proba: False | classes: [np.str_('fire'), np.str_('no_fire')]

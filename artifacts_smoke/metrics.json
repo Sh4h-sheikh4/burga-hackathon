@@ -1,0 +1,149 @@
+{
+  "WARNING": "Metrics describe only the supplied val/test folders. They are not proof of real-world accuracy; check that test images come from different flights/fires than train.",
+  "train_counts": {
+    "no_fire": 30,
+    "low": 30,
+    "moderate": 30,
+    "high": 30
+  },
+  "temperature": 0.3905472457408905,
+  "calibration_warning": null,
+  "arch": "small_cnn",
+  "input": {
+    "width": 64,
+    "height": 64,
+    "channels": 3,
+    "layout": "NCHW",
+    "scale": "0_1",
+    "dtype": "float32"
+  },
+  "training_domain": "rgb",
+  "val": {
+    "n": 40,
+    "classes": [
+      "no_fire",
+      "low",
+      "moderate",
+      "high"
+    ],
+    "confusion_matrix_rows_truth_cols_pred": [
+      [
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        10,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        10
+      ]
+    ],
+    "accuracy_argmax": 1.0,
+    "per_class": {
+      "no_fire": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "low": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "moderate": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "high": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    },
+    "presence_at_thresholds": {
+      "uncertain_rate": 0.0,
+      "fire_recall_confident": 1.0,
+      "false_alarm_rate_confident": 0.0
+    },
+    "severity_mean_abs_class_error": 0.0
+  },
+  "test": {
+    "n": 40,
+    "classes": [
+      "no_fire",
+      "low",
+      "moderate",
+      "high"
+    ],
+    "confusion_matrix_rows_truth_cols_pred": [
+      [
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        10,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        10
+      ]
+    ],
+    "accuracy_argmax": 1.0,
+    "per_class": {
+      "no_fire": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "low": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "moderate": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "high": {
+        "support": 10,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    },
+    "presence_at_thresholds": {
+      "uncertain_rate": 0.0,
+      "fire_recall_confident": 1.0,
+      "false_alarm_rate_confident": 0.0
+    },
+    "severity_mean_abs_class_error": 0.0
+  }
+}

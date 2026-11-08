@@ -1,0 +1,20 @@
+.env
+.env.local
+*.pem
+spool/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+# Local training outputs can be regenerated; keep smoke demo artifacts if added intentionally
+artifacts/
+# Never commit live secrets or connection strings
+secrets/
+credentials*
+**/FIREDRONE_DB_URL*

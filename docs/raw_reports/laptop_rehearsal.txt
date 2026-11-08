@@ -1,0 +1,86 @@
+# Laptop-only rehearsal: fresh venv (requirements-laptop.txt + torch CPU 2.15.0), bundle copy, fresh local PostgreSQL 17.11 + TimescaleDB 2.23.0 DB (NOT TigerData cloud). ALL IMAGES SYNTHETIC (tools/make_smoke_dataset.py): plumbing only, says nothing about real fire accuracy.
+### 1 init_db
+connected: PostgreSQL 17.11, timescaledb not installed yet
+schema ready; hypertables: fire_assessments, frames
+### 2 no-model baseline
+wrote SYNTHETIC data to smoke_data/ and smoke_demo_images/ (plumbing test only)
+ok    SYNTHETIC_demo_07.png -> frame 4cf757b2-22ec-4541-8293-31446ae6f9f8 (160x120, 5 KB, 2026-11-08T04:43:54+00:00)
+done: 8 uploaded, 0 skipped (duplicates), 0 failed
+WARNING MODEL UNAVAILABLE: no model artifact configured (model.backend/model.path) -> every frame will be stored as status=model_unavailable
+INFO processed 8 frames
+### 3 train (4-class, smoke data)
+train counts: {'no_fire': 30, 'low': 30, 'moderate': 30, 'high': 30} | val: 40 | test: 40
+epoch 8/8 train_loss=0.0078 val_loss=0.0043
+fitted softmax temperature T=0.379 on val
+wrote artifacts/fire_model.onnx, artifacts/model_config.json, artifacts/metrics.json
+model_config.json has validated=false. Review metrics.json (test split) before trusting outputs.
+
+real	0m4.533s
+user	0m14.879s
+sys	0m0.779s
+{'name': 'fire_cnn_small_cnn', 'backend': 'onnx', 'path': 'fire_model.onnx', 'training_domain': 'rgb', 'validated': False} ['no_fire', 'low', 'moderate', 'high'] {'width': 64, 'height': 64, 'channels': 3, 'layout': 'NCHW', 'scale': '0_1', 'dtype': 'float32'}
+### 4 predict one file
+{'status': 'ok', 'fire_present': True, 'fire_probability': 0.9999999601294753, 'severity_class': 'high', 'severity_confidence': 0.9999997541350227, 'validated': False}
+### 5 upload demo images (mission demo-1), rerun to show dedupe
+done: 8 uploaded, 0 skipped (duplicates), 0 failed
+done: 0 uploaded, 8 skipped (duplicates), 0 failed
+### 6 worker with trained model
+INFO processed 8 frames
+### 7 results
+== frames queue (capture_source / status / count)
+  file_replay  done        16
+== latest 8 assessments (validated=False means the model has NOT passed held-out evaluation)
+  captured_at (UTC)    source                       status            fire  p_fire  severity  sev_conf frame_id
+  2026-11-08 04:43:59 SYNTHETIC_demo_07.png        ok                True  1.000   high      1.000    9d2b7cda-0374-4a3c-b5e0-c1a51eabf021
+  2026-11-08 04:43:59 SYNTHETIC_demo_06.png        ok                True  1.000   high      1.000    fe720f68-26df-4912-aee7-0f18dd6f6bf4
+  2026-11-08 04:43:59 SYNTHETIC_demo_05.png        ok                True  1.000   moderate  1.000    bd5562a4-34f1-4f1e-a356-699a9eb97b69
+  2026-11-08 04:43:59 SYNTHETIC_demo_04.png        ok                True  1.000   moderate  1.000    3f0ec461-f306-4f19-827b-72428c897bbf
+  2026-11-08 04:43:59 SYNTHETIC_demo_03.png        ok                True  1.000   low       1.000    c89f90f8-fd78-40c7-86d7-a9a907664bb4
+  2026-11-08 04:43:59 SYNTHETIC_demo_02.png        ok                True  1.000   low       1.000    eafb7b15-68a1-464a-879c-b4822621b3ca
+  2026-11-08 04:43:59 SYNTHETIC_demo_01.png        ok                False 0.000   -         -        24ce193a-fbf9-4d77-bf7b-852bd7698944
+  2026-11-08 04:43:59 SYNTHETIC_demo_00.png        ok                False 0.000   -         -        2e153fc5-3430-406d-8de1-aa2d697a54c6
+### 8 SQL
+      source_name      | status | fire_present | p_fire | severity_class | validated 
+-----------------------+--------+--------------+--------+----------------+-----------
+ SYNTHETIC_demo_00.png | ok     | f            |  0.000 |                | f
+ SYNTHETIC_demo_01.png | ok     | f            |  0.000 |                | f
+ SYNTHETIC_demo_02.png | ok     | t            |  1.000 | low            | f
+ SYNTHETIC_demo_03.png | ok     | t            |  1.000 | low            | f
+ SYNTHETIC_demo_04.png | ok     | t            |  1.000 | moderate       | f
+ SYNTHETIC_demo_05.png | ok     | t            |  1.000 | moderate       | f
+ SYNTHETIC_demo_06.png | ok     | t            |  1.000 | high           | f
+ SYNTHETIC_demo_07.png | ok     | t            |  1.000 | high           | f
+(8 rows)
+
+CALL
+         bucket         | mission_id | n_frames | n_fire | max_severity_index | all_validated 
+------------------------+------------+----------+--------+--------------------+---------------
+ 2026-11-08 04:43:00+00 | demo-1     |        8 |      6 |                  2 | f
+(1 row)
+
+### 9 binary presence-only variant
+wrote artifacts_binary/fire_model.onnx, artifacts_binary/model_config.json, artifacts_binary/metrics.json
+done: 8 uploaded, 0 skipped (duplicates), 0 failed
+INFO processed 8 frames
+== frames queue (capture_source / status / count)
+  file_replay  done        24
+== latest 4 assessments (validated=False means the model has NOT passed held-out evaluation)
+  captured_at (UTC)    source                       status            fire  p_fire  severity  sev_conf frame_id
+  2026-11-08 04:44:04 SYNTHETIC_demo_07.png        ok                True  1.000   -         -        acea994f-b98f-473d-b126-e579e1d89961
+      notes: model has no severity output; severity withheld; model NOT validated on labeled held-out data
+  2026-11-08 04:44:04 SYNTHETIC_demo_06.png        ok                True  1.000   -         -        a41c3787-96c5-4774-81d2-6d1b0050ed15
+      notes: model has no severity output; severity withheld; model NOT validated on labeled held-out data
+  2026-11-08 04:44:04 SYNTHETIC_demo_05.png        ok                True  1.000   -         -        b0b0f0e6-535a-47d5-9ba9-cc88cd35f68d
+      notes: model has no severity output; severity withheld; model NOT validated on labeled held-out data
+  2026-11-08 04:44:04 SYNTHETIC_demo_04.png        ok                True  1.000   -         -        cc99ed27-ca35-4dd3-b841-6c7a48638054
+      notes: model has no severity output; severity withheld; model NOT validated on labeled held-out data
+### 10 requeue the no-model mission and score it with the trained model
+INFO requeued 8 frames
+INFO processed 8 frames
+== frames queue (capture_source / status / count)
+  file_replay  done        24
+== latest 3 assessments (validated=False means the model has NOT passed held-out evaluation)
+  captured_at (UTC)    source                       status            fire  p_fire  severity  sev_conf frame_id
+  2026-11-08 04:43:54 SYNTHETIC_demo_07.png        ok                True  1.000   high      1.000    4cf757b2-22ec-4541-8293-31446ae6f9f8
+  2026-11-08 04:43:54 SYNTHETIC_demo_07.png        model_unavailable -     -       -         -        4cf757b2-22ec-4541-8293-31446ae6f9f8
+  2026-11-08 04:43:54 SYNTHETIC_demo_06.png        ok                True  1.000   high      1.000    876bc7ca-c2a2-4597-965f-4574213a1bf6

@@ -1,0 +1,49 @@
+# Local integration run 2026-11-08 02:15 UTC - PostgreSQL 17.11 + TimescaleDB 2.23.0 built locally (NOT a TigerData cloud service)
+# ALL DATA SYNTHETIC (generated blobs). Model = tools/make_test_onnx.py TEST_ONLY brightness ONNX, NOT a fire model. Outputs below demonstrate plumbing only.
+## 1) seed
+12 SYNTHETIC frames inserted
+## 2) worker with NO model (config/example.json)
+WARNING MODEL UNAVAILABLE: no model artifact configured (model.backend/model.path) -> every frame will be stored as status=model_unavailable
+INFO processed 12 frames
+      status       | fire_unknown | count 
+-------------------+--------------+-------
+ model_unavailable | t            |    12
+(1 row)
+
+## 3) worker with TEST_ONLY ONNX model
+INFO frame 96ec0c72-d9b7-4259-8d6f-704720031faa -> status=ok fire=False sev=None p=0.093
+INFO frame 67013c28-5411-4b6b-baa7-2c67e4a08926 -> status=ok fire=False sev=None p=0.092
+INFO frame a3e9ff10-e21b-4ba2-9692-8837bbcaf38b -> status=ok fire=False sev=None p=0.093
+INFO frame 568a84de-147b-45c5-8d05-302d4b7f87d9 -> status=ok fire=False sev=None p=0.093
+INFO frame b839dfcd-f9b7-49f0-bb14-6e26a7c87a37 -> status=ok fire=False sev=None p=0.14
+INFO frame 9f0c4a9f-87ab-4149-aba4-744b551c8c3b -> status=ok fire=False sev=None p=0.162
+INFO frame fff4bab7-dd50-4984-b36d-95bf338fd9d2 -> status=ok fire=False sev=None p=0.202
+INFO frame 5f602d52-2ca1-49ae-b045-ac98943143d9 -> status=ok fire=False sev=None p=0.243
+INFO frame 2beef023-ecbf-4896-8847-3194e1ae02fa -> status=ok fire=False sev=None p=0.295
+INFO frame e19ab09c-6885-4507-b9e0-c6619a583876 -> status=uncertain fire=None sev=None p=0.386
+INFO frame 526468a6-0e82-471e-a7b4-3ab26c0e5ba7 -> status=uncertain fire=None sev=None p=0.466
+INFO frame ef187839-03cb-4127-9321-0738bcb89c1c -> status=uncertain fire=None sev=None p=0.558
+INFO processed 12 frames
+  t_utc   |  status   | fire_present | p_fire | sev | hot_proxy | validated | is_synthetic 
+----------+-----------+--------------+--------+-----+-----------+-----------+--------------
+ 02:15:11 | ok        | f            |  0.093 |     |    0.0000 | f         | t
+ 02:15:12 | ok        | f            |  0.092 |     |    0.0000 | f         | t
+ 02:15:13 | ok        | f            |  0.093 |     |    0.0000 | f         | t
+ 02:15:14 | ok        | f            |  0.093 |     |    0.0000 | f         | t
+ 02:15:15 | ok        | f            |  0.140 |     |    0.0515 | f         | t
+ 02:15:16 | ok        | f            |  0.162 |     |    0.0706 | f         | t
+ 02:15:17 | ok        | f            |  0.202 |     |    0.0999 | f         | t
+ 02:15:18 | ok        | f            |  0.243 |     |    0.1260 | f         | t
+ 02:15:19 | ok        | f            |  0.295 |     |    0.1547 | f         | t
+ 02:15:20 | uncertain |              |  0.386 |     |    0.1990 | f         | t
+ 02:15:21 | uncertain |              |  0.466 |     |    0.2335 | f         | t
+ 02:15:22 | uncertain |              |  0.558 |     |    0.2716 | f         | t
+(12 rows)
+
+## 4) tracking continuous aggregate
+CALL
+         bucket         |    device_id    | n_frames | n_confident | n_uncertain | n_fire | max_severity_index | any_synthetic | all_validated 
+------------------------+-----------------+----------+-------------+-------------+--------+--------------------+---------------+---------------
+ 2026-11-08 02:15:00+00 | SYNTHETIC-drone |       12 |           9 |           3 |      0 |                    | t             | f
+(1 row)
+

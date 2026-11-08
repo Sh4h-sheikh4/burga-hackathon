@@ -1,0 +1,34 @@
+** Drc report for Hackathon_Fall26.kicad_pcb **
+** Created on 2026-11-08T03:47:20 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 5 DRC violations **
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(138.5000 mm, 95.5000 mm): Track [/ID_SDA] on F.Cu, length 4.0000 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(143.0000 mm, 94.0000 mm): Track [/ID_SCL] on F.Cu, length 0.1909 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(108.3700 mm, 48.7700 mm): Track [+3V3] on F.Cu, length 1.0500 mm
+[lib_footprint_mismatch]: Footprint 'LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y' does not match copy in library 'Package_LGA'
+    Local override; warning
+    @(134.5000 mm, 71.0875 mm): Footprint U2
+[lib_footprint_mismatch]: Footprint 'PinSocket_2x20_P2.54mm_Vertical' does not match copy in library 'Connector_PinSocket_2.54mm'
+    Local override; warning
+    @(108.3700 mm, 48.7700 mm): Footprint J1
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - PTH inside courtyard
+    - NPTH inside courtyard
+
+** End of Report **

@@ -1,0 +1,6 @@
+# Laptop-only hackathon setup (Python 3.10-3.13). Torch is installed separately (CPU build), see HACKATHON_LAPTOP.md.
+psycopg[binary]>=3.2
+numpy>=1.24
+Pillow>=10
+onnxruntime>=1.17
+onnx>=1.15        # needed by torch.onnx.export when training

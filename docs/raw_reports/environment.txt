@@ -1,0 +1,5 @@
+Python 3.13.5
+postgres (PostgreSQL) 17.11
+timescaledb 2.23.0 (built from source)
+psycopg 3.3.8 numpy 2.5.4 Pillow 13.0.0 onnxruntime 1.31.1 onnx 1.23.2 torch 2.15.0+cpu scikit-learn 1.9.1 opencv 5.0.0
+kicad-cli 10.0.8 (flatpak org.kicad.KiCad)
